@@ -1,7 +1,7 @@
 import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
-import GracefulShutDown from "./app/utils/GracefulShutDown.util";
+import GracefulShutDown from "./app/utils/GracefulShutDown";
 import { envConfig } from "./app/config/env";
 
 export let server: Server;
