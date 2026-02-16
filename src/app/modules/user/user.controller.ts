@@ -2,17 +2,23 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { userServices } from "./user.service";
+import catchAsync from "../../utils/catchAsync";
 
-const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  try {
+const createUser = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
     const user = await userServices.createUser(req.body);
-
     res
       .status(httpStatus.CREATED)
       .send({ message: "User registered successfully.", user });
-  } catch (err: any) {
-    next(err);
-  }
-};
+  },
+);
 
-export const userController = { createUser };
+const getAllUsers = catchAsync(
+  async (_req: Request, res: Response, _next: NextFunction) => {
+    const users = await userServices.getAllUsers();
+
+    res.status(httpStatus.OK).send({ users });
+  },
+);
+
+export const userController = { createUser, getAllUsers };
