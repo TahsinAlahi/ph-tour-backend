@@ -1,6 +1,8 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { router } from "./app/routes";
+import { envConfig } from "./app/config/env";
+import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 const app = express();
 
 app.use(express.json());
@@ -13,5 +15,7 @@ app.get("/", (req: Request, res: Response) => {
     message: "Welcome to tour management backend",
   });
 });
+
+app.use(globalErrorHandler);
 
 export default app;

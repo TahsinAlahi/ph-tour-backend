@@ -11,11 +11,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       .status(httpStatus.CREATED)
       .send({ message: "User registered successfully.", user });
   } catch (err: any) {
-    console.log(err);
-    res.status(httpStatus.BAD_REQUEST).json({
-      message: `Something went wrong!! ${err}`,
-      err,
-    });
+    next(err);
   }
 };
 
