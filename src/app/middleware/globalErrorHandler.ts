@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { envConfig } from "../config/env";
+import { envVars } from "../config/env";
 import AppError from "../errorHelpers/AppError";
 
 export const globalErrorHandler = (
@@ -22,6 +22,6 @@ export const globalErrorHandler = (
   res.status(statusCode).json({
     success: false,
     message: errorMessage,
-    stack: envConfig.NODE_ENV === "development" ? err?.stack : null,
+    stack: envVars.NODE_ENV === "development" ? err?.stack : null,
   });
 };
