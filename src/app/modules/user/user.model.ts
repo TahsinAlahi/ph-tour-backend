@@ -1,6 +1,7 @@
 import { Document, model, Schema } from "mongoose";
 import { IAuthProvider, IsActive, IUser, Role } from "./user.interface";
 import bcrypt from "bcrypt";
+import { envVars } from "../../config/env";
 
 export interface DUser extends Document, IUser {
   isValidPassword(password: string): Promise<boolean>;
@@ -58,7 +59,7 @@ userSchema.pre("save", async function () {
 
   if (!thisUser.isModified("password")) return;
 
-  const salt = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(Number(envVars.BCRYPT_SALT_ROUND));
   thisUser.password = await bcrypt.hash(thisUser.password, salt);
 });
 

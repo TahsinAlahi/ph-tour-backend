@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import app from "./app";
 import GracefulShutDown from "./app/utils/GracefulShutDown";
 import { envVars } from "./app/config/env";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 
 export let server: Server;
 
@@ -19,4 +20,7 @@ const startServer = async () => {
   }
 };
 
-startServer();
+(async () => {
+  await startServer();
+  await seedSuperAdmin();
+})();
