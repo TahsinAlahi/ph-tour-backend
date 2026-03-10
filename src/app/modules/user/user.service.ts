@@ -65,6 +65,7 @@ const updateUser = async (
     }
   }
 
+  // This doesn't rehash the password if the password changes, changing the pre in the model might work but still that's a bit messy
   // const updatedUser = await User.findOneAndUpdate({ _id: userId }, payload, {
   //   new: true,
   //   runValidator: true,
@@ -73,6 +74,7 @@ const updateUser = async (
   Object.assign(user, payload);
 
   await user.save();
+  console.log(user);
 
   return user;
 };

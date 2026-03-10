@@ -29,6 +29,8 @@ export const checkAuth =
           "You are not authorized to access this route",
         );
       }
+
+      req.user = token;
       next();
     } catch (error) {
       next(error);
