@@ -18,6 +18,27 @@ const createUser = catchAsync(
   },
 );
 
+const updateUser = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const userId = req.params.id;
+
+    const decodedToken = req.user;
+
+    const user = await userServices.updateUser(
+      userId as string,
+      req.body,
+      decodedToken,
+    );
+
+    sendResponse<IUser>(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "User updated successfully",
+      data: user!,
+    });
+  },
+);
+
 const getAllUsers = catchAsync(
   async (_req: Request, res: Response, _next: NextFunction) => {
     const users = await userServices.getAllUsers();
@@ -31,4 +52,4 @@ const getAllUsers = catchAsync(
   },
 );
 
-export const userController = { createUser, getAllUsers };
+export const userController = { createUser, getAllUsers, updateUser };

@@ -2,15 +2,16 @@ import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
 import GracefulShutDown from "./app/utils/GracefulShutDown";
-import { envConfig } from "./app/config/env";
+import { envVars } from "./app/config/env";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 
 export let server: Server;
 
 const startServer = async () => {
   try {
-    await mongoose.connect(envConfig.DB_URL);
-    server = app.listen(envConfig.PORT, () => {
-      console.log(`The server is running on port ${envConfig.PORT}`);
+    await mongoose.connect(envVars.DB_URL);
+    server = app.listen(envVars.PORT, () => {
+      console.log(`The server is running on port ${envVars.PORT}`);
     });
     // setup graceful shutdown
     new GracefulShutDown(server);
@@ -19,4 +20,7 @@ const startServer = async () => {
   }
 };
 
-startServer();
+(async () => {
+  await startServer();
+  await seedSuperAdmin();
+})();

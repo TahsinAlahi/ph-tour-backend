@@ -1,5 +1,11 @@
-import { model, Schema } from "mongoose";
+import { Document, model, Schema } from "mongoose";
 import { IAuthProvider, IsActive, IUser, Role } from "./user.interface";
+import bcrypt from "bcrypt";
+import { envVars } from "../../config/env";
+
+export interface DUser extends Document, IUser {
+  isValidPassword(password: string): Promise<boolean>;
+}
 
 const authProviderSchema = new Schema<IAuthProvider>(
   {
@@ -12,10 +18,17 @@ const authProviderSchema = new Schema<IAuthProvider>(
   },
 );
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<DUser>(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    name: { type: String, required: true, trim: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      index: true,
+    },
+    // select:false will hide the password from the response
     password: { type: String },
     phone: { type: String },
     picture: { type: String },
@@ -40,4 +53,25 @@ const userSchema = new Schema<IUser>(
   },
 );
 
-export const User = model<IUser>("User", userSchema);
+userSchema.pre("save", async function () {
+  const thisUser = this as DUser;
+  if (!thisUser.password) return;
+
+  if (!thisUser.isModified("password")) return;
+
+  const salt = await bcrypt.genSalt(Number(envVars.BCRYPT_SALT_ROUND));
+  thisUser.password = await bcrypt.hash(thisUser.password, salt);
+});
+
+// There might be some issues with the findOneAndUpdate method after changing the password
+
+userSchema.methods.isValidPassword = async function (password: string) {
+  try {
+    // Compare provided password with stored hash
+    return await bcrypt.compare(password, this.password);
+  } catch (error) {
+    throw new Error("Password comparison failed," + error);
+  }
+};
+
+export const User = model<DUser>("User", userSchema);
