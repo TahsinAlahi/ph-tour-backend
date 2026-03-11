@@ -4,22 +4,12 @@ import sendResponse from "../../utils/sendResponse";
 import { authService } from "./auth.service";
 import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes";
+import { setAuthCookie } from "../../utils/setCookie";
 
 const credentialsLogin = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const loginInfo = await authService.credentialsLogin(req.body);
-
-    res.cookie("refreshToken", loginInfo.refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-
-    res.cookie("accessToken", loginInfo.accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+    setAuthCookie(res, loginInfo);
 
     sendResponse(res, {
       statusCode: 200,
@@ -38,6 +28,8 @@ const getNewAccessToken = catchAsync(
     }
 
     const newAccessToken = await authService.getNewAccessToken(refreshToken);
+
+    setAuthCookie(res, newAccessToken);
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
