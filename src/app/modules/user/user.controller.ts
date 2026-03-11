@@ -22,7 +22,7 @@ const updateUser = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const userId = req.params.id;
 
-    const decodedToken = req.user;
+    const decodedToken = req.user!;
 
     const user = await userServices.updateUser(
       userId as string,

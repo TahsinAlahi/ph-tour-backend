@@ -29,8 +29,15 @@ const credentialsLogin = async (payload: Partial<IUser>) => {
     envVars.JWT_ACCESS_SECRET,
     envVars.JWT_ACCESS_EXPIRES,
   );
+  const refreshToken = generateToken(
+    jwtPayload,
+    envVars.JWT_REFRESH_SECRET,
+    envVars.JWT_REFRESH_EXPIRES,
+  );
+  const userObj = user.toObject();
+  delete userObj.password;
 
-  return { accessToken };
+  return { accessToken, refreshToken, user: userObj };
 };
 
 export const authService = {
