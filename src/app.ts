@@ -3,9 +3,12 @@ import cors from "cors";
 import { router } from "./app/routes";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import routeNotFound from "./app/middleware/routeNotFound";
+import cookieParser from "cookie-parser";
+
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors());
 
 app.use("/api/v1", router);
