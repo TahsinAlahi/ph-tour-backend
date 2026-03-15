@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../errorHelpers/AppError";
 import {
   createNewAccessTokenWithRefreshToken,
@@ -33,7 +34,25 @@ const getNewAccessToken = async (refreshToken: string) => {
   return { accessToken };
 };
 
+const resetPassword = async (
+  oldPassword: string,
+  newPassword: string,
+  userToken: JwtPayload,
+) => {
+  const user = await User.findOne({ _id: userToken.userId });
+
+  const doesOldPasswordMatches = await user?.isValidPassword(oldPassword);
+  if (!doesOldPasswordMatches) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid old password");
+  }
+
+  // we are already checking if the user exists with checkAuth middleware so no need to check it again here
+  user!.password = newPassword;
+  await user!.save();
+};
+
 export const authService = {
   credentialsLogin,
   getNewAccessToken,
+  resetPassword,
 };
